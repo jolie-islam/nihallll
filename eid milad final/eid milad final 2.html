@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<title>CASE 024: The Birthday Incident</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,500&family=Caveat:wght@600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Colors and fonts are the variables on the next line. Change them here to restyle everything. */
+:root{--burg:#6d1a2b;--cherry:#a3162f;--cream:#f6ead6;--paper:#fbf3e3;--pink:#d9a1a6;--ink:#2e2220;--serif:'Playfair Display',Georgia,serif;--hand:'Caveat','Comic Sans MS',cursive;--sans:'DM Sans',system-ui,sans-serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--burg);color:var(--ink);font:17px/1.55 var(--sans);transition:background 2s;min-height:100vh}
+body.warm{background:#e9b9ba}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(circle at 20% 10%,rgba(255,255,255,.08),transparent 50%),repeating-linear-gradient(45deg,rgba(0,0,0,.03) 0 2px,transparent 2px 6px);pointer-events:none}
+#app{max-width:520px;margin:0 auto;padding:18px 14px 60px;position:relative}
+.scr{display:none}.scr.on{display:block;animation:flip .6s ease}
+@keyframes flip{from{opacity:0;transform:translateY(24px) rotate(-1.5deg)}to{opacity:1;transform:none}}
+.paper{background:var(--paper);border-radius:4px;padding:22px 18px;box-shadow:0 10px 30px rgba(0,0,0,.35);position:relative;background-image:linear-gradient(transparent 31px,rgba(163,22,47,.08) 32px);background-size:100% 32px}
+h1,h2{font-family:var(--serif);color:var(--burg);margin:.2em 0;line-height:1.1}
+h1{font-size:2.3rem;font-weight:800}h2{font-size:1.6rem}
+.hand{font-family:var(--hand);font-size:1.35rem;color:var(--cherry);line-height:1.2}
+.stamp{display:inline-block;border:3px solid var(--cherry);color:var(--cherry);font:800 .95rem var(--serif);letter-spacing:.12em;padding:4px 10px;transform:rotate(-6deg);animation:bounce 2.4s infinite}
+@keyframes bounce{0%,100%{transform:rotate(-6deg) scale(1)}50%{transform:rotate(-4deg) scale(1.06)}}
+.btn{display:block;width:100%;margin:14px 0 4px;padding:15px;border:0;border-radius:3px;background:var(--cherry);color:var(--cream);font:700 1rem var(--sans);letter-spacing:.06em;box-shadow:0 4px 0 var(--burg);cursor:pointer;transition:transform .1s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--burg)}
+.btn.ghost{background:transparent;color:var(--burg);border:2px dashed var(--burg);box-shadow:none}
+.btn[disabled]{opacity:.45}
+.prog{display:flex;gap:6px;margin-bottom:12px}.prog i{flex:1;height:7px;border-radius:4px;background:rgba(246,234,214,.3)}.prog i.d{background:var(--pink)}.prog i.c{background:var(--cream)}
+.tag{font:700 .8rem var(--sans);color:var(--cream);letter-spacing:.1em;margin:0 0 6px}
+.pol{background:#fff;padding:8px 8px 22px;box-shadow:0 4px 12px rgba(0,0,0,.25);transform:rotate(var(--r,-2deg));position:relative}
+.pol .ph{aspect-ratio:4/3;background:#ffd6e0;border:3px dashed var(--cherry);display:grid;place-items:center;font:700 1.15rem var(--hand);color:var(--cherry);overflow:hidden;text-align:center;padding:6px}
+.pol .ph.image{aspect-ratio:auto;display:block;padding:0}
+.pol img{display:block;width:100%;height:auto;object-fit:contain}
+.pol .cap{font:1.2rem var(--hand);color:var(--ink);margin-top:6px;text-align:center}
+.pol::before{content:"";position:absolute;top:-12px;left:42%;width:46px;height:22px;background:rgba(217,161,166,.7);transform:rotate(3deg)}
+.grid{display:grid;gap:22px;margin:18px 0}
+input[type=text]{width:100%;padding:14px;border:2px solid var(--burg);border-radius:3px;background:#fff;font:1.05rem var(--sans);color:var(--ink)}
+.fb{min-height:1.6em;font-weight:500;margin:8px 0}.fb.ok{color:#256b3a}.fb.no{color:var(--cherry)}
+.opt{display:block;width:100%;text-align:left;margin:10px 0;padding:14px;background:#fff;border:2px solid var(--pink);border-radius:3px;font:1rem var(--sans);color:var(--ink);cursor:pointer;transition:.2s}
+.opt.bad{opacity:.5;border-color:var(--cherry);text-decoration:line-through}.opt.good{background:#f4d3d6;border-color:var(--cherry);transform:scale(1.02)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;min-height:44px}
+.chip{padding:9px 13px;background:#fff;color:var(--ink);border:2px solid var(--burg);border-radius:20px;font:600 1rem var(--sans);cursor:pointer;min-height:40px}
+.slot{min-height:56px;border:2px dashed var(--burg);padding:8px;border-radius:4px;display:flex;flex-wrap:wrap;gap:8px;background:rgba(255,255,255,.5)}
+.slot:empty::before{content:"your message builds here";font:1.2rem var(--hand);color:var(--burg);opacity:.6}
+.small{font-size:.85rem;opacity:.85}
+.warn{background:#fff3b8;border:2px dashed var(--cherry);padding:10px;font-size:.88rem;margin:14px 0;transform:rotate(.8deg)}
+.secret{display:none;margin-top:8px;padding:10px;background:#f4d3d6;border-left:4px solid var(--cherry);font-family:var(--hand);font-size:1.3rem;color:var(--burg)}
+.secret.on{display:block;animation:flip .4s}
+.tiny{background:none;border:0;color:var(--cherry);font-size:1rem;cursor:pointer;padding:6px;animation:beat 1.6s infinite}
+@keyframes beat{50%{transform:scale(1.35)}}
+.cursor::after{content:"▌";animation:blink 1s steps(1) infinite;color:var(--cherry)}
+@keyframes blink{50%{opacity:0}}
+.letter{font:1.5rem/1.35 var(--hand);color:var(--ink);white-space:pre-wrap;min-height:6em}
+.env{margin:18px auto;width:230px;height:150px;background:var(--pink);border-radius:4px;position:relative;cursor:pointer;display:grid;place-items:center;box-shadow:0 8px 18px rgba(0,0,0,.25);font:1.2rem var(--hand);color:var(--burg)}
+.env::before{content:"♥";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2rem;color:var(--cherry)}
+.env span{position:absolute;bottom:10px}
+.cert{border:4px double var(--burg);padding:20px 14px;text-align:center;background:#fffaf0;margin-top:18px;transform:rotate(-1deg)}
+.fall{position:fixed;top:-30px;color:var(--cherry);animation:fall 3s linear forwards;pointer-events:none;z-index:9}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+.hide{display:none!important}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- COVER -->
+<!-- ===== SCREEN: COVER (✏️ the quote below is plain text, edit it right here) ===== -->
+<section class="scr on" id="s-cover"><div class="paper">
+  <div class="row"><span class="stamp">TOP SECRET</span><span class="hand">confidential ♥</span></div>
+  <p class="small" style="margin:14px 0 0">CASE NO. 024</p>
+  <h1>The Birthday Incident</h1>
+  <p class="hand">Subject: <span class="nm">Niho</span> (a.k.a. <span class="nm2">Nizo</span>)</p>
+  <p style="font-family:var(--serif);font-style:italic">“An extremely important person has a birthday. Unfortunately, she is also suspected of being illegally iconic, emotionally significant, and responsible for an unreasonable amount of chaos.”</p>
+  <button class="btn" id="accept">[ ACCEPT YOUR CASE ]</button>
+  <button class="tiny" data-secret="sec-cover" aria-label="tiny heart">♥</button>
+  <div class="secret" id="sec-cover">You found the tiny heart. This is the part of the file where I admit I check on you more than a normal person would. ♥</div>
+</div></section>
+
+<!-- BRIEFING -->
+<!-- ===== SCREEN: BRIEFING (✏️ edit the paragraphs and the fake warning right here) ===== -->
+<section class="scr" id="s-brief"><div class="paper">
+  <h2>Briefing</h2>
+  <p class="hand">Lead Detective: <span class="nm">Niho</span><br>Investigator on file: <span id="me"></span></p>
+  <p>Detective <span class="nm">Niho</span>, thank you for coming. I assembled the evidence myself, mostly out of spite and love in unknown proportions. Three files. One suspect. The suspect, unfortunately, is you.</p>
+  <p>Rules: no wrong answer locks you out. I’m not that evil. Tap hints freely, I’d rather you win than suffer.</p>
+  <div class="warn">⚠ OFFICIAL WARNING: This file contains levels of iconic behavior exceeding the legal limit. Handle with sunglasses.</div>
+  <button class="btn" data-go="1">OPEN FILE 01</button>
+</div></section>
+
+<!-- FILE 01 -->
+<!-- ===== SCREEN: FILE 01 (text comes from CONTENT.evidence / q1 in the script) ===== -->
+<section class="scr" id="s-1"><div class="prog"></div><div class="paper">
+  <p class="tag" style="color:var(--cherry)">FILE 01</p><h2>The Crime Scene</h2>
+  <p class="small">Our friendship’s questionable history.</p>
+  <div class="grid" id="evid"></div>
+  <p><b id="q1"></b></p>
+  <input type="text" id="a1" autocomplete="off" placeholder="Type your answer">
+  <div class="fb" id="f1"></div>
+  <button class="btn" id="chk1">SUBMIT ANSWER</button>
+  <button class="btn ghost" id="hint1">NEED A HINT</button>
+  <button class="btn ghost hide" id="skip1">I SURRENDER (REVEAL IT)</button>
+  <button class="tiny" data-secret="sec-folder">📁 evidence folder</button>
+  <div class="secret" id="sec-folder"></div>
+</div></section>
+
+<!-- FILE 02 -->
+<!-- ===== SCREEN: FILE 02 quiz (text comes from CONTENT.quiz) ===== -->
+<section class="scr" id="s-2"><div class="prog"></div><div class="paper">
+  <p class="tag" style="color:var(--cherry)">FILE 02</p><h2>The Suspect</h2>
+  <p class="small">How well does she know our friendship?</p>
+  <p class="hand" id="qn"></p>
+  <p><b id="qq"></b></p>
+  <div id="opts"></div>
+  <div class="fb" id="f2"></div>
+  <button class="btn hide" id="next2">NEXT QUESTION</button>
+</div></section>
+
+<!-- FILE 03 -->
+<!-- ===== SCREEN: FILE 03 word puzzle (text comes from CONTENT.message) ===== -->
+<section class="scr" id="s-3"><div class="prog"></div><div class="paper">
+  <p class="tag" style="color:var(--cherry)">FILE 03</p><h2>The Final Evidence</h2>
+  <p class="small">A secret message, torn into pieces.</p>
+  <p id="riddle"></p>
+  <p class="small">Tap the words in the right order to rebuild the message.</p>
+  <div class="slot" id="slot"></div>
+  <div class="chips" id="pool"></div>
+  <div class="fb" id="f3"></div>
+  <button class="btn ghost" id="hint3">HINT</button>
+  <button class="btn ghost" id="clr3">START OVER</button>
+  <button class="tiny" data-secret="sec-clip" aria-label="paperclip">📎</button>
+  <div class="secret" id="sec-clip"></div>
+</div></section>
+
+<!-- TWIST -->
+<!-- ===== SCREEN: CASE CLOSED (✏️ the two quotes are plain text, edit them right here) ===== -->
+<section class="scr" id="s-twist"><div class="paper" style="text-align:center">
+  <h1 style="font-size:2.8rem">CASE CLOSED.</h1>
+  <p style="font-family:var(--serif);font-style:italic">“After an extensive investigation, the evidence confirms that the suspect is, unfortunately for everyone involved, one of my favorite people in the world.”</p>
+  <p id="tw2" style="opacity:0;transition:opacity 2s">“However, the investigation has uncovered a more serious matter. You have officially become a permanent part of my life, and there is currently no known procedure for reversing this.”</p>
+  <button class="btn" id="final">[ OPEN THE FINAL FILE ]</button>
+</div></section>
+
+<!-- FINAL -->
+<!-- ===== SCREEN: FINAL FILE (gallery, letter, envelope, certificate; ✏️ certificate wording is edited below) ===== -->
+<section class="scr" id="s-final"><div class="paper">
+  <h2>The Final File</h2>
+  <div class="grid" id="gallery"></div>
+  <div class="row"><span class="small">Background music</span><button class="chip" id="music">▶ play</button></div>
+  <hr style="border:0;border-top:1px dashed var(--burg);margin:18px 0">
+  <div class="letter cursor" id="letter"></div>
+  <button class="small chip hide" id="skipType">skip typing</button>
+  <div id="after" class="hide">
+    <p class="hand" style="text-align:center">there’s one more thing in here. tap it.</p>
+    <div class="env" id="env"><span>sealed. open me</span></div>
+    <div class="letter hide" id="last"></div>
+    <button class="btn hide" id="one">ONE LAST THING…</button>
+    <div class="letter hide" id="onemsg"></div>
+    <div class="cert hide" id="cert">
+      <div class="stamp">OFFICIAL</div>
+      <h2>Officially Impossible to Replace</h2>
+      <p>Awarded to <b class="nm">Niho</b> for services rendered: pillow occupation, unsolicited clinging, random-hour outings on Makana, and being you.</p>
+      <p class="hand">Signed, <span id="me2"></span></p>
+    </div>
+    <button class="btn ghost" id="reset">REPLAY THE CASE</button>
+  </div>
+</div></section>
+
+</div>
+
+<script>
+/* ################################################################
+   HOW TO EDIT THIS FILE
+   Only the 3 blocks below need your touch: PHOTOS, SETTINGS, CONTENT.
+   Look for these markers:
+     📷  = put a photo here
+     ✏️  = write your own text here
+     [BRACKETS] = placeholder text, replace the whole thing
+   Keep the "quotes" and the commas. Everything under the line that says
+   "DON'T EDIT BELOW" is the game engine.
+   ################################################################ */
+
+
+/* ================================================================
+   📷 1. PHOTOS (all six photo spots live here)
+   Paste an image link or file name between the quotes.
+   Empty "" = a pink "ADD PHOTO HERE" box shows up in the game.
+   ================================================================ */
+const PHOTOS = {
+  exhibitA: "WhatsApp Image 2026-10-24 at 11.41.49 PM.jpeg",   // 📷 File 01, evidence card A
+  exhibitB: "WhatsApp Image 2026-10-24 at 11.18.51 PM.jpeg",   // 📷 File 01, evidence card B
+  exhibitC: "WhatsApp Image 2026-10-24 at 11.20.48 PM.jpeg",   // 📷 File 01, evidence card C (the Makana scooter one)
+  final1:   "WhatsApp Image 2026-10-24 at 11.41.48 PM.jpeg",   // 📷 Final file gallery, photo 1
+  final2:   "WhatsApp Image 2026-10-24 at 11.20.18 PM.jpeg",   // 📷 Final file gallery, photo 2
+  final3:   "WhatsApp Image 2026-10-24 at 11.19.43 PM.jpeg"    // 📷 Final file gallery, photo 3
+};
+
+
+/* ================================================================
+   ✏️ 2. SETTINGS (names + music)
+   ================================================================ */
+const SETTINGS = {
+  herName:     "Niho",    // ✏️ shown on the cover and in the dialogue
+  herNickname: "Nizo",    // ✏️ shown on the cover
+  myName:      "Jolie",   // ✏️ shown as the investigator and on the certificate
+  music:       ""         // ✏️ song file name or link, e.g. "song.mp3". "" = no music
+};
+
+
+/* ================================================================
+   ✏️ 3. CONTENT (every piece of text in the game)
+   ================================================================ */
+const CONTENT = {
+
+  /* ---------- FILE 01: THE CRIME SCENE ---------- */
+
+  // ✏️ Three evidence cards. 'cap' = polaroid caption, 'text' = the report under it.
+  evidence: [
+    { photo: PHOTOS.exhibitA, cap: "Exhibit A",
+      text: "Photographic evidence of two people who should probably not be left unsupervised together." },
+    { photo: PHOTOS.exhibitB, cap: "Exhibit B",
+      text: "Incident report: the suspect was found asleep in a location not intended for sleeping. Again." },
+    { photo: PHOTOS.exhibitC, cap: "Exhibit C",
+      text: "Incident report: the suspect was collected by an unmarked scooter ( Makana) for an unscheduled outing at an unreasonable hour. Again." }
+  ],
+
+  // ✏️ The File 01 question
+  q1: "Where does the suspect most often commit the crime of falling asleep uninvited?",
+
+  // ✏️ Accepted answers. First one is shown if she gives up. Partial matches count.
+  a1: ["Jolie’s cozy pillow", "cozy pillow", "pillow", "my pillow", "bed", "my bed"],
+
+  // ✏️ Hints, shown one at a time each time she taps "Need a hint"
+  hints1: [
+    "Think soft. Think mine.",
+    "It’s in my bed, and it’s the coziest thing in the room."
+  ],
+
+  // ✏️ Tiny hidden folder under File 01 (optional bonus)
+  folder: "EVIDENCE FOLDER #7: Classified inside joke.",
+
+
+  /* ---------- FILE 02: THE SUSPECT (quiz) ----------
+     Each question:  q = question text
+                     o = answer cards, exactly ONE with ok:1 (the right one)
+                     t = card text,  fb = reaction after she taps it
+     To add a question, copy a whole { q:..., o:[...] } block.
+     To remove one, delete the whole block. Wrong answers just get disabled. */
+  quiz: [
+    { q: "We’re comparing two shades of lipstick. What is the correct term for what we argue about?",
+      o: [
+        { t: "Undertone", fb: "Technically correct. Socially, we don’t say that here. Try again." },
+        { t: "Underwear", ok: 1, fb: "Correct. The glossary has been updated." },
+        { t: "Overtone",  fb: "Ma’am, this is a color-matching investigation." }
+      ] },
+
+    { q: "Which of these crimes are you most likely to commit against my peace of mind?",
+      o: [
+        { t: "Taking my pillow and acting like it was always yours", ok: 1, fb: "Guilty. And the pillow has stopped filing complaints." },
+        { t: "Being on time",   fb: "Nobody believes that. Not even you." },
+        { t: "Giving me space", fb: "That one’s fiction. Next." }
+      ] },
+
+    { q: "We both say we’re ‘not really a physical touch person.’ What actually happens?",
+      o: [
+        { t: "We keep a respectful distance", fb: "Bold lie. Evidence says otherwise." },
+        { t: "We become one blanket with two heads", ok: 1, fb: "Exactly. Clingy, but with plausible deniability." },
+        { t: "We shake hands", fb: "Professional. Cold. Wrong." }
+      ] },
+
+    { q: "What do we call the scooter we ride around on?",
+      o: [
+        { t: "Just ‘the scooter,’ like normal people", fb: "Normal people were not invited to this investigation. Try again." },
+        { t: "Makana", ok: 1, fb: "Correct. Makana has been informed and is proud of you." },
+        { t: "Public transport", fb: "Makana has filed a formal complaint. Try again." }
+      ] },
+
+    { q: "When do we usually hang out?",
+      o: [
+        { t: "Planned two weeks ahead on a shared calendar", fb: "Who are you and what have you done with the suspect?" },
+        { t: "Randomly, at any time, no warning", ok: 1, fb: "Correct. Our schedule is chaos and it works." },
+        { t: "Only on weekends", fb: "Weekends are for amateurs. Try again." }
+      ] },
+
+    // The sweet one, keep it last
+    { q: "What is the perfect after-event plan for us, no matter the event?",
+      o: [
+        { t: "Car ride + Aghani Afrah", fb: "Great, but that’s only half the ritual. Try again." },
+        { t: "3asir Maka", fb: "Elite choice, still incomplete. Try again." },
+        { t: "All of the above", ok: 1, fb: "Correct. The only acceptable answer. The event was never the point." }
+      ] }
+  ],
+
+
+  /* ---------- FILE 03: THE FINAL EVIDENCE ---------- */
+
+  // ✏️ Text above the word puzzle
+  riddle: "Evidence recovered from File 01 and 02, shredded and out of order. Rebuild the message the suspect should never forget.",
+
+  // ✏️ The message she rebuilds. One word per item, IN THE CORRECT ORDER. The game shuffles them.
+  message: ["Zero", "personal", "space,", "one", "stolen", "pillow."],
+
+  // ✏️ Hints for the puzzle. After the last hint, the game places the first two words for her.
+  hint3: [
+    "It starts with a number that is also your boundaries.",
+    "Zero personal space, ... and then the thing from File 01."
+  ],
+
+  // ✏️ Secret revealed when she taps the little paperclip (optional bonus)
+  clip: "You found the paperclip. Secret: [I LOVE YOU EVEN IF I DONT SHOW ENOUGH]",
+
+
+  /* ---------- FINAL FILE: GALLERY + LETTER ---------- */
+
+  // ✏️ Gallery captions (the photos themselves are in PHOTOS above)
+  gallery: [
+    { photo: PHOTOS.final1, cap: "[caption 1]" },
+    { photo: PHOTOS.final2, cap: "[caption 2]" },
+    { photo: PHOTOS.final3, cap: "[caption 3]" }
+  ],
+
+  // ✏️ The letter, typed out one letter at a time. One paragraph per line.
+  // Be specific: a real moment beats a pretty sentence every time.
+  letter: [
+    "Dear NIZO,",
+    "I joke about everything, but I need you to know I meant all of this. You’re one of the few people I never have to perform around. Whatever happens, wherever we end up, you have a spot in my life and in my bed’s pillow situation, and nobody is replacing you.",
+    "What makes you special isn’t one big thing. It’s that with you, I never have to be a version of myself. I can be loud, tired, annoying, or quiet for three hours, and you stay. You make the random stuff feel like it matters",
+  ],
+
+  // ✏️ Revealed when she taps the sealed envelope
+  lastPara: "all that doesnt cancel the fact that tizek hamra.jk happy birthday babyy.",
+
+  // ✏️ Revealed by the "ONE LAST THING…" button. Short lands harder.
+  oneMore: "ENJOY IT TO THE MAX (m3aya yaani)"
+};
+
+/* #################################################################
+   DON'T EDIT BELOW THIS LINE (the game engine)
+   ################################################################# */
+const CONFIG = { ...SETTINGS, ...CONTENT };   // lets the engine read both blocks as one
+
+const $=id=>document.getElementById(id);
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+let stage=0;
+try{stage=+sessionStorage.getItem('c24')||0}catch(e){}
+function save(){try{sessionStorage.setItem('c24',stage)}catch(e){}}
+function show(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');scrollTo(0,0)}
+function prog(){document.querySelectorAll('.prog').forEach(p=>{p.innerHTML='<i></i><i></i><i></i>';[...p.children].forEach((c,i)=>c.className=i<stage?'d':i==stage?'c':'')})}
+function photo(p,cap,cls){const d=document.createElement('div');d.className='pol';d.style.setProperty('--r',(Math.random()*5-2.5)+'deg');
+  d.innerHTML='<div class="ph'+(p?' image':'')+'">'+(p?'<img alt="" src="'+p+'">':'📷 ADD PHOTO HERE<br>(see PHOTOS in the code)')+'</div><div class="cap">'+cap+'</div>';
+  const im=d.querySelector('img');if(im)im.onerror=()=>{im.parentNode.textContent='📷 PHOTO NOT FOUND: check the link'};return d}
+function hearts(){if(reduce)return;for(let i=0;i<18;i++){const h=document.createElement('div');h.className='fall';h.textContent='♥';h.style.left=Math.random()*100+'vw';h.style.animationDelay=Math.random()*1.2+'s';h.style.fontSize=(14+Math.random()*18)+'px';document.body.appendChild(h);setTimeout(()=>h.remove(),4500)}}
+const norm=s=>s.toLowerCase().replace(/[^a-z0-9 ]/g,'').trim();
+
+document.querySelectorAll('.nm').forEach(e=>e.textContent=CONFIG.herName);
+document.querySelectorAll('.nm2').forEach(e=>e.textContent=CONFIG.herNickname);
+$('me').textContent=$('me2').textContent=CONFIG.myName;
+document.querySelectorAll('[data-secret]').forEach(b=>b.onclick=()=>$(b.dataset.secret).classList.toggle('on'));
+$('sec-folder').textContent=CONFIG.folder;$('sec-clip').textContent=CONFIG.clip;
+
+$('accept').onclick=()=>{show('s-brief')};
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{stage=+b.dataset.go-1;save();prog();show('s-'+(stage+1))});
+
+// FILE 01
+CONFIG.evidence.forEach(e=>{const w=document.createElement('div');w.appendChild(photo(e.photo,e.cap));const p=document.createElement('p');p.style.marginTop='14px';p.textContent=e.text;w.appendChild(p);$('evid').appendChild(w)});
+$('q1').textContent=CONFIG.q1;let tries=0,hi=0;
+function done1(){stage=1;save();prog();hearts();setTimeout(()=>show('s-2'),1400)}
+$('chk1').onclick=()=>{const a=norm($('a1').value);if(!a)return;
+  if(CONFIG.a1.some(x=>a.includes(norm(x)))){$('f1').className='fb ok';$('f1').textContent='CASE FILE 01 SOLVED. Obviously. It was always Jolie’s cozy pillow.';done1()}
+  else{tries++;$('f1').className='fb no';$('f1').textContent='Not quite, detective. The suspect is laughing. Try again or tap hint.';if(tries>=3)$('skip1').classList.remove('hide')}};
+$('hint1').onclick=()=>{$('f1').className='fb';$('f1').textContent='Hint: '+CONFIG.hints1[Math.min(hi++,CONFIG.hints1.length-1)]};
+$('skip1').onclick=()=>{$('f1').className='fb ok';$('f1').textContent='Answer: '+CONFIG.a1[0]+'. Case moves on.';done1()};
+
+// FILE 02
+let qi=0;
+function renderQ(){const q=CONFIG.quiz[qi];$('qn').textContent='Question '+(qi+1)+' of '+CONFIG.quiz.length;$('qq').textContent=q.q;$('f2').textContent='';$('f2').className='fb';$('next2').classList.add('hide');$('opts').innerHTML='';
+  q.o.forEach(o=>{const b=document.createElement('button');b.className='opt';b.textContent=o.t;b.onclick=()=>{
+    if(o.ok){b.classList.add('good');$('f2').className='fb ok';$('f2').textContent=o.fb;[...$('opts').children].forEach(x=>x.disabled=true);
+      $('next2').textContent=qi==CONFIG.quiz.length-1?'FINISH FILE 02':'NEXT QUESTION';$('next2').classList.remove('hide')}
+    else{b.classList.add('bad');b.disabled=true;$('f2').className='fb no';$('f2').textContent=o.fb}};$('opts').appendChild(b)})}
+$('next2').onclick=()=>{if(++qi<CONFIG.quiz.length)renderQ();else{stage=2;save();prog();hearts();show('s-3')}};
+renderQ();
+
+// FILE 03
+$('riddle').textContent=CONFIG.riddle;let picked=[],h3=0;
+function r3(){const s=$('slot'),p=$('pool');s.innerHTML='';p.innerHTML='';
+  picked.forEach((w,i)=>{const c=document.createElement('button');c.className='chip';c.textContent=w;c.onclick=()=>{picked.splice(i,1);r3()};s.appendChild(c)});
+  order.filter(w=>!picked.includes(w)).forEach(w=>{const c=document.createElement('button');c.className='chip';c.textContent=w;c.onclick=()=>{picked.push(w);r3();if(picked.length==order.length)chk3()};p.appendChild(c)})}
+let order=[...CONFIG.message].sort(()=>Math.random()-.5);
+if(order.join()==CONFIG.message.join())order.reverse();
+function chk3(){if(picked.join(' ')==CONFIG.message.join(' ')){$('f3').className='fb ok';$('f3').textContent='MESSAGE DECODED.';hearts();setTimeout(finish,1500)}
+  else{$('f3').className='fb no';$('f3').textContent='That reads like a ransom note. Not the right order. Tap words to remove them.'}}
+$('hint3').onclick=()=>{$('f3').className='fb';$('f3').textContent='Hint: '+CONFIG.hint3[Math.min(h3++,CONFIG.hint3.length-1)];if(h3>CONFIG.hint3.length){picked=CONFIG.message.slice(0,2);r3()}};
+$('clr3').onclick=()=>{picked=[];$('f3').textContent='';r3()};
+r3();
+
+// TWIST + FINAL
+function finish(){stage=3;save();document.body.classList.add('warm');show('s-twist');setTimeout(()=>$('tw2').style.opacity=1,reduce?0:2500)}
+$('final').onclick=()=>{show('s-final');startFinal()};
+let typing=null;
+function startFinal(){CONFIG.gallery.forEach(g=>$('gallery').appendChild(photo(g.photo,g.cap)));
+  const L=$('letter'),txt=CONFIG.letter.join('\n\n');L.textContent='';
+  function end(){clearInterval(typing);L.textContent=txt;L.classList.remove('cursor');$('skipType').classList.add('hide');$('after').classList.remove('hide')}
+  if(reduce){end();return}
+  $('skipType').classList.remove('hide');$('skipType').onclick=end;let i=0;
+  typing=setInterval(()=>{L.textContent=txt.slice(0,++i);if(i>=txt.length)end()},38)}
+$('env').onclick=()=>{$('env').classList.add('hide');$('last').classList.remove('hide');$('last').textContent=CONFIG.lastPara;$('one').classList.remove('hide');hearts()};
+$('one').onclick=()=>{$('one').classList.add('hide');$('onemsg').classList.remove('hide');$('onemsg').textContent=CONFIG.oneMore;$('cert').classList.remove('hide');hearts()};
+let aud=null;
+if(CONFIG.music){aud=new Audio(CONFIG.music);aud.loop=true}
+$('music').onclick=()=>{if(!aud){$('music').textContent='add a song in CONFIG';return}
+  if(aud.paused){aud.play();$('music').textContent='⏸ pause'}else{aud.pause();$('music').textContent='▶ play'}};
+$('reset').onclick=()=>{try{sessionStorage.removeItem('c24')}catch(e){}location.reload()};
+
+prog();
+if(stage>=3){document.body.classList.add('warm');show('s-twist');$('tw2').style.opacity=1}
+else if(stage>0){show('s-'+(stage+1))}
+</script>
+</body>
+</html>
